@@ -224,16 +224,18 @@ gem install shopify_cli
 ## GraphQL
 
 This library also supports Shopify's new [GraphQL API](https://help.shopify.com/api/graphql-admin-api)
-via a dependency on the [graphql-client](https://github.com/github/graphql-client) gem.
+via a dependency on the [graphlient](https://github.com/ashkan18/graphlient) gem.
 The authentication process (steps 1-5 under [Getting Started](#getting-started))
 is identical. Once your session is activated, simply construct a new graphql
-client and use `parse` and `query` as defined by
-[graphql-client](https://github.com/github/graphql-client#defining-queries).
+client and use `parse` and `execute` or `query` as defined by
+[graphlient](https://github.com/ashkan18/graphlient#usage).
+
+Example with `query` and a string:
 
 ```ruby
 client = ShopifyAPI::GraphQL.new
 
-SHOP_NAME_QUERY = client.parse <<-'GRAPHQL'
+shop_name_query = client.parse <<-'GRAPHQL'
   {
     shop {
       name
@@ -241,7 +243,24 @@ SHOP_NAME_QUERY = client.parse <<-'GRAPHQL'
   }
 GRAPHQL
 
-result = client.query(SHOP_NAME_QUERY)
+result = client.query(shop_name_query)
+result.data.shop.name
+```
+
+Example with `parse` and `execute` using a block:
+
+```ruby
+client = ShopifyAPI::GraphQL.new
+
+query = client.parse do
+  query do
+    shop do
+      name
+    end
+  end
+end
+
+result = client.execute query
 result.data.shop.name
 ```
 

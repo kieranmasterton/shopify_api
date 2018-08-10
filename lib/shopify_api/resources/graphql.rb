@@ -1,6 +1,5 @@
 # frozen_string_literal: true
-require 'graphql/client'
-require 'graphql/client/http'
+require 'graphlient'
 
 module ShopifyAPI
   # GraphQL API.
@@ -8,15 +7,9 @@ module ShopifyAPI
     def initialize
       uri = Base.site.dup
       uri.path = '/admin/api/graphql.json'
-      @http = ::GraphQL::Client::HTTP.new(uri.to_s) do
-        define_method(:headers) do |_context|
-          Base.headers
-        end
-      end
-      @schema = ::GraphQL::Client.load_schema(@http)
-      @client = ::GraphQL::Client.new(schema: @schema, execute: @http)
+      @client = ::Graphlient::Client.new(uri.to_s, headers: Base.headers)
     end
 
-    delegate :parse, :query, to: :@client
+    delegate :parse, :query, :execute, :schema, to: :@client
   end
 end
